@@ -1,5 +1,5 @@
 import { Hono } from 'https://deno.land/x/hono@v3.9.2/mod.ts'
-import {setupFrontend} from "./frontend.ts";
+import {setupFrontend} from "./frontend.tsx";
 
 const app = new Hono()
 
