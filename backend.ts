@@ -23,10 +23,16 @@ const setupBackend = (app: Hono) => {
     const { response, socket } = Deno.upgradeWebSocket(c.req.raw);
     
     socket.addEventListener("message", (e) => console.log(e));
-    const handler = (val:unknown) => socket.send(JSON.stringify(val));
+    const handler = (val:unknown) => socket.send(JSON.stringify({
+      type: "playlist",
+      data: val,
+    }));
     rooms[roomId].handlers.push(handler);
     socket.onopen = () => {
-      socket.send(JSON.stringify(rooms[roomId].playlist));
+      socket.send(JSON.stringify({
+        type: "playlist",
+        data: rooms[roomId].playlist,
+      }));
     }
     socket.onclose = () => {
       rooms[roomId].handlers = rooms[roomId].handlers.filter((s) => s !== handler);
