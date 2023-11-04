@@ -4,7 +4,7 @@ import {UUID} from "./types/brand.ts";
 
 const rooms:{[key:UUID]:{
   playlist: string[],
-  handlers: (val:unknown)=>void[],
+  handlers: ((val:unknown)=>void)[],
   owner: UUID;
 }} = {};
 
@@ -36,6 +36,7 @@ const setupBackend = (app: Hono) => {
     session.id ??= uuid();
     rooms[roomId] = {
       handlers: [],
+      playlist: [],
       owner: session.id
     };
     return c.json({
@@ -43,7 +44,7 @@ const setupBackend = (app: Hono) => {
     });
   });
   app.post("/api/v1/room/:id/add",async(c)=>{
-    const body = await c.req.json<{url: string}>()
+    const body = await c.req.json() as {url: string}
     const roomId = c.req.param("id");
     const room = rooms[roomId];
     const session = c.get('session');
