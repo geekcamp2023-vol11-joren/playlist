@@ -18,7 +18,7 @@ const store = new CookieStore()
 app.use('*', sessionMiddleware({
   store,
   encryptionKey: 'password_at_least_32_characters_long', // Required for CookieStore, recommended for others
-  expireAfterSeconds: 900, // Expire session after 15 minutes
+  expireAfterSeconds: 43200, // Expire session after 15 minutes
   cookieOptions: {
     sameSite: 'Lax',
   },
