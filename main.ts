@@ -34,6 +34,6 @@ app.use(
   })
 )
 
-setupBackend(app);
-
-Deno.serve(app.fetch)
+setupBackend(app).then(()=>{
+  Deno.serve(app.fetch)
+});
