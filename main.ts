@@ -5,7 +5,6 @@ import {
   sessionMiddleware,
   CookieStore
 } from 'https://deno.land/x/hono_sessions/mod.ts'
-import {setupFrontend} from "./frontend.tsx";
 import {setupBackend} from "./backend.ts";
 
 const app = new Hono<{
@@ -24,8 +23,6 @@ app.use('*', sessionMiddleware({
     sameSite: 'Lax',
   },
 }))
-
-setupFrontend(app)
 
 setupBackend(app);
 
