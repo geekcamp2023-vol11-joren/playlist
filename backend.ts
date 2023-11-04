@@ -1,12 +1,19 @@
 import {Hono} from "https://deno.land/x/hono@v3.9.2/hono.ts";
+import { Innertube } from 'https://deno.land/x/youtubei@v7.0.0-deno/deno.ts';
 import {uuid} from "./utils/uuid.ts";
 import {UUID} from "./types/brand.ts";
+import type {VideoInfo} from "https://deno.land/x/youtubei@v7.0.0-deno/deno/src/parser/youtube/index.ts";
+
 
 const rooms:{[key:UUID]:{
-  playlist: string[],
+  playlist: {
+    url: string,
+    metadata: VideoInfo["basic_info"]
+  }[],
   handlers: ((val:unknown)=>void)[],
   owner: UUID;
 }} = {};
+
 
 const broadcastPlaylistUpdate = (roomId: UUID) => {
   const room = rooms[roomId];
@@ -14,7 +21,8 @@ const broadcastPlaylistUpdate = (roomId: UUID) => {
   room.handlers.forEach((h) => h(room.playlist));
 }
 
-const setupBackend = (app: Hono) => {
+const setupBackend = async (app: Hono) => {
+  const yt = await Innertube.create();
   app.get("/ws/v1/room/:id/", (c) => {
     const roomId = c.req.param("id");
     if (rooms[roomId] === undefined) {
@@ -54,14 +62,18 @@ const setupBackend = (app: Hono) => {
   });
   app.post("/api/v1/room/:id/add",async(c)=>{
     const body = await c.req.json() as {url: string}
-    const roomId = c.req.param("id");
+    const roomId = c.req.param("id") as UUID;
     const room = rooms[roomId];
     const session = c.get('session');
     session.id ??= uuid();
     if (room === undefined) {
       return c.text("Room not found", 404);
     }
-    room.playlist.push(body.url);
+    const video = await yt.getInfo(body.url);
+    room.playlist.push({
+      url: body.url,
+      metadata: video.basic_info
+    });
     broadcastPlaylistUpdate(roomId);
     return c.text("OK");
   })
