@@ -15,7 +15,7 @@ const broadcastPlaylistUpdate = (roomId: UUID) => {
 }
 
 const setupBackend = (app: Hono) => {
-  app.get("/api/v1/api/room/:id/ws", (c) => {
+  app.get("/api/v1/room/:id/ws", (c) => {
     const roomId = c.req.param("id");
     if (rooms[roomId] === undefined) {
       return c.text("Room not found", 404);
@@ -30,7 +30,7 @@ const setupBackend = (app: Hono) => {
     }
     return response;
   });
-  app.post("/api/v1/api/create",(c)=>{
+  app.post("/api/v1/create",(c)=>{
     const session = c.get('session');
     const roomId = uuid();
     session.id ??= uuid();
