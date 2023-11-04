@@ -20,12 +20,12 @@ const setupBackend = (app: Hono) => {
     if (rooms[roomId] === undefined) {
       return c.text("Room not found", 404);
     }
-    const { response, socket } = Deno.upgradeWebSocket(c.req);
+    const { response, socket } = Deno.upgradeWebSocket(c.req.raw);
     
     socket.addEventListener("message", (e) => console.log(e));
     const handler = (val:unknown) => socket.send(JSON.stringify(val));
     rooms[roomId].handlers.push(handler);
-    socket.onconnect = () => {
+    socket.onopen = () => {
       socket.send(JSON.stringify(rooms[roomId].playlist));
     }
     socket.onclose = () => {
