@@ -15,7 +15,7 @@ const broadcastPlaylistUpdate = (roomId: UUID) => {
 }
 
 const setupBackend = (app: Hono) => {
-  app.get("/api/v1/room/:id/ws", (c) => {
+  app.get("/ws/v1/room/:id/", (c) => {
     const roomId = c.req.param("id");
     if (rooms[roomId] === undefined) {
       return c.text("Room not found", 404);
