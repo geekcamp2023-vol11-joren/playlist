@@ -2,7 +2,7 @@ import {Hono} from "https://deno.land/x/hono@v3.9.2/hono.ts";
 import { Innertube } from 'https://deno.land/x/youtubei@v7.0.0-deno/deno.ts';
 import {uuid} from "./utils/uuid.ts";
 import {UUID} from "./types/brand.ts";
-import {TMovieItem} from "./types/api";
+import {TMovieItem} from "./types/api.ts";
 
 
 const rooms:{[key:UUID]:{
