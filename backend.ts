@@ -25,6 +25,9 @@ const setupBackend = (app: Hono) => {
     socket.addEventListener("message", (e) => console.log(e));
     const handler = (val:unknown) => socket.send(JSON.stringify(val));
     rooms[roomId].handlers.push(handler);
+    socket.onconnect = () => {
+      socket.send(JSON.stringify(rooms[roomId].playlist));
+    }
     socket.onclose = () => {
       rooms[roomId].handlers = rooms[roomId].handlers.filter((s) => s !== handler);
     }
