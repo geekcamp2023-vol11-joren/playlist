@@ -2,14 +2,11 @@ import {Hono} from "https://deno.land/x/hono@v3.9.2/hono.ts";
 import { Innertube } from 'https://deno.land/x/youtubei@v7.0.0-deno/deno.ts';
 import {uuid} from "./utils/uuid.ts";
 import {UUID} from "./types/brand.ts";
-import type {VideoInfo} from "https://deno.land/x/youtubei@v7.0.0-deno/deno/src/parser/youtube/index.ts";
+import {TMovieItem} from "./types/api";
 
 
 const rooms:{[key:UUID]:{
-  playlist: {
-    url: string,
-    metadata: VideoInfo["basic_info"]
-  }[],
+  playlist: TMovieItem[],
   handlers: ((val:unknown)=>void)[],
   owner: UUID;
 }} = {};
