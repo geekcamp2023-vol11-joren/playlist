@@ -1,4 +1,4 @@
-import {UUID} from "../types/brand";
+import {UUID} from "../types/brand.ts";
 
 const uuid = ():UUID => {
   // https://github.com/GoogleChrome/chrome-platform-analytics/blob/master/src/internal/identifier.js

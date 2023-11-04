@@ -1,6 +1,6 @@
 import {Hono} from "https://deno.land/x/hono@v3.9.2/hono.ts";
 import {uuid} from "./utils/uuid.ts";
-import {UUID} from "./types/brand";
+import {UUID} from "./types/brand.ts";
 
 const rooms:{[key:UUID]:{
   playlist: string[],
