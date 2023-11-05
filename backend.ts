@@ -3,6 +3,7 @@ import { Innertube } from 'https://deno.land/x/youtubei@v7.0.0-deno/deno.ts';
 import {uuid} from "./utils/uuid.ts";
 import {UUID} from "./types/brand.ts";
 import {TMovieItem} from "./types/api.ts";
+import {TMetadataResponse, TWatchV3Error} from "./types/nicovideo.ts";
 
 
 const rooms:{[key:UUID]:{
@@ -58,7 +59,7 @@ const setupBackend = async (app: Hono) => {
     });
   });
   app.post("/api/v1/room/:id/add",async(c)=>{
-    const body = await c.req.json() as {url: string}
+    const body = await c.req.json() as {url: string,type: "youtube"|"nicovideo"}
     const roomId = c.req.param("id") as UUID;
     const room = rooms[roomId];
     const session = c.get('session');
@@ -66,11 +67,35 @@ const setupBackend = async (app: Hono) => {
     if (room === undefined) {
       return c.text("Room not found", 404);
     }
-    const video = await yt.getInfo(body.url);
-    room.playlist.push({
-      url: body.url,
-      metadata: video.basic_info
-    });
+    if (body.type === "youtube"){
+      const video = await yt.getInfo(body.url);
+      room.playlist.push({
+        url: body.url,
+        metadata: {
+          title: video.basic_info.title ?? "",
+          channel: video.basic_info.channel?.name ?? "",
+          thumbnail: video.basic_info.thumbnail?.[0].url ?? "",
+        }
+      });
+    }else if(body.type === "nicovideo"){
+      const req = await fetch(`https://www.nicovideo.jp/api/watch/v3_guest/${body.url}?_frontendId=6&_frontendVersion=0&actionTrackId=a_0`);
+      const json = await req.json() as TMetadataResponse;
+      const isError = (input:TMetadataResponse): input is TWatchV3Error => input.meta.status !== 200;
+      if (isError(json)) {
+        return c.text("Failed to fetch metadata", 400);
+      }
+      if (!json.data.video.isEmbedPlayerAllowed){
+        return c.text("Embed Player is not allowed", 400);
+      }
+      room.playlist.push({
+        url: body.url,
+        metadata: {
+          title: json.data.video?.title ?? "",
+          channel: json.data.owner?.nickname ?? "",
+          thumbnail: json.data.thumbnail?.url ?? "",
+        }
+      });
+    }
     broadcastPlaylistUpdate(roomId);
     return c.text("OK");
   })
