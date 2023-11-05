@@ -2,7 +2,7 @@ import {Hono} from "https://deno.land/x/hono@v3.9.2/hono.ts";
 import { Innertube } from 'https://deno.land/x/youtubei@v7.0.0-deno/deno.ts';
 import {uuid} from "./utils/uuid.ts";
 import {UUID} from "./types/brand.ts";
-import {TMovieItem} from "./types/api.ts";
+import {SupportedSites, TMovieItem} from "./types/api.ts";
 import {TMetadataResponse, TWatchV3Error} from "./types/nicovideo.ts";
 
 
@@ -59,7 +59,7 @@ const setupBackend = async (app: Hono) => {
     });
   });
   app.post("/api/v1/room/:id/add",async(c)=>{
-    const body = await c.req.json() as {url: string,type: "youtube"|"nicovideo"}
+    const body = await c.req.json() as {url: string,type: SupportedSites}
     const roomId = c.req.param("id") as UUID;
     const room = rooms[roomId];
     const session = c.get('session');
@@ -70,6 +70,7 @@ const setupBackend = async (app: Hono) => {
     if (body.type === "youtube"){
       const video = await yt.getInfo(body.url);
       room.playlist.push({
+        type: "youtube",
         url: body.url,
         metadata: {
           title: video.basic_info.title ?? "",
@@ -88,6 +89,7 @@ const setupBackend = async (app: Hono) => {
         return c.text("Embed Player is not allowed", 400);
       }
       room.playlist.push({
+        type: "nicovideo",
         url: body.url,
         metadata: {
           title: json.data.video?.title ?? "",

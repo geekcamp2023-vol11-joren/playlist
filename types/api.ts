@@ -1,4 +1,5 @@
 export type TMovieItem = {
+  type: SupportedSites
   url: string;
   metadata: {
     title: string;
@@ -6,3 +7,5 @@ export type TMovieItem = {
     thumbnail: string;
   };
 };
+
+export type SupportedSites = "youtube"|"nicovideo";
