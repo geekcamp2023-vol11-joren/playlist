@@ -94,7 +94,7 @@ const setupBackend = async (app: Hono) => {
         metadata: {
           title: json.data.video?.title ?? "",
           channel: json.data.owner?.nickname ?? "",
-          thumbnail: json.data.thumbnail?.url ?? "",
+          thumbnail: json.data.video?.thumbnail?.url ?? "",
         }
       });
     }

@@ -78,9 +78,6 @@ export type TWatchV3Metadata = {
       commentableUserTypeForPayment: string;
       "9d091f87": boolean;
     };
-    thumbnail:{
-      url: string;
-    }
   };
 };
 
