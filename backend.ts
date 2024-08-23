@@ -1,5 +1,5 @@
 import {Hono} from "https://deno.land/x/hono@v3.9.2/hono.ts";
-import { Innertube } from 'https://deno.land/x/youtubei@v7.0.0-deno/deno.ts';
+import { Innertube } from 'https://deno.land/x/youtubei@v10.3.0-deno/deno.ts';
 import {uuid} from "./utils/uuid.ts";
 import {UUID} from "./types/brand.ts";
 import {SupportedSites, TMovieItem} from "./types/api.ts";
